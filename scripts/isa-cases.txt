@@ -1,0 +1,57 @@
+mov x0, #5
+mov x1, #65535
+mov x2, #0x10000
+mov x3, #0x123400000000
+mov x4, #-1
+mov x5, #-300
+movz x6, #0x1234, lsl #16
+movk x6, #0xbeef
+movk x7, #0xcafe, lsl #48
+mov x8, x9
+mov sp, x10
+mov x11, sp
+add x0, x1, #42
+add x0, x1, #1, lsl #12
+add sp, sp, #16
+sub sp, sp, #32
+sub x2, x3, #4095
+adds x4, x5, #1
+subs x6, x7, #8
+cmp x0, #10
+cmp sp, #0
+add x0, x1, x2
+add x0, x1, x2, lsl #3
+sub x3, x4, x5
+sub x3, x4, x5, asr #2
+adds x6, x7, x8
+subs x9, x10, x11
+cmp x1, x2
+cmp x1, x2, lsr #4
+and x0, x1, x2
+orr x3, x4, x5
+eor x6, x7, x8
+eor x6, x7, x8, lsl #1
+mul x0, x1, x2
+madd x3, x4, x5, x6
+udiv x7, x8, x9
+lsl x0, x1, #3
+lsl x0, x1, #63
+lsr x2, x3, #7
+lsr x2, x3, #0
+lsl x4, x5, x6
+lsr x7, x8, x9
+ldr x0, [x1]
+ldr x0, [x1, #8]
+ldr x2, [sp, #32760]
+str x3, [x4]
+str x3, [x4, #16]
+str x30, [sp]
+ldr x5, [x6, x7]
+ldr x5, [x6, x7, lsl #3]
+str x8, [x9, x10]
+str x8, [x9, x10, lsl #3]
+ret
+ret x1
+nop
+brk #0
+brk #0x3e8
