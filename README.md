@@ -48,7 +48,7 @@ npm run dev -- --host 127.0.0.1 --port 5191
 - **执行语义**：数组求和、栈读写、BL/RET、斐波那契、跨步访存的缓存命中数、SUBS 标志位、逐阶段单步、回退、越界、TLB。
 - **系统模型**：[tests/sim.test.ts](tests/sim.test.ts) 覆盖六个场景的数据包端点、篡改启动失败、压缩/换出/换入、按需分页、顺序读快于随机读、光栅化输出、后台线程只上能效核、风扇故障降频。
 - **资料一致性**：[tests/data.test.ts](tests/data.test.ts) 回归检查 HDMI/SDXC 板载描述、NAND 颗数推算与电池混合规格的 provenance 标签。
-- **浏览器验收**：[scripts/browser-smoke.mjs](scripts/browser-smoke.mjs) 通过 CDP 驱动真实 Chrome，检查 WebGL 初始渲染、拆解滑块与复原、数据流单步与数据包详情、AArch64 指令/微步、内存缺页、SSD 冷缓存读取、GPU 统一内存与 TBDR、调度散热，以及 640×900、480×800、480×640 的侧边栏布局共 13 项，截图与报告写入 `artifacts/`。此前完整验收记录为 12/12 通过、无运行时异常或 `console.error`；新增的矮屏遮挡检查已在离线浏览器中单独通过，完整 13 项本轮未重跑。运行前需启动 `npm run dev`，并让 Chrome 以 `--remote-debugging-port=9227` 打开测试页。
+- **浏览器验收**：[scripts/browser-smoke.mjs](scripts/browser-smoke.mjs) 通过 CDP 驱动真实 Chrome，检查 WebGL 初始渲染、拆解滑块与复原、数据流单步与数据包详情、AArch64 指令/微步、内存缺页、SSD 冷缓存读取、GPU 统一内存与 TBDR、调度散热，以及 640×900、480×800、480×640 的侧边栏布局共 13 项，截图与报告写入 `artifacts/`。此前完整验收记录为 12/12 通过、无运行时异常或 `console.error`；新增的矮屏遮挡检查已在离线浏览器中单独通过，本轮完整 13 项未跑完。运行前需启动 `npm run dev`，并让 Chrome 以 `--remote-debugging-port=9227` 打开测试页。
 
 ## 已知限制
 
