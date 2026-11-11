@@ -190,6 +190,50 @@ assert.match(thermal, /GHz/);
 passed('调度队列、核心占用和热模型', thermal.replace(/\n/g, ' · '));
 await shot('08-scheduler');
 
+async function checkSidebarLayout(width, height, screenshot) {
+  await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+  await sleep(500);
+  const layout = await evaluate(`(() => {
+    const rect = (selector) => {
+      const r = document.querySelector(selector).getBoundingClientRect();
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width };
+    };
+    const controls = [...document.querySelectorAll('button,input,select,textarea')]
+      .filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
+    const coveredFooterControls = [...document.querySelectorAll('.bottom button,.bottom input,.bottom select,.bottom textarea')]
+      .filter((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0 || r.top < 0 || r.top + 3 >= innerHeight) return false;
+        const x = Math.max(1, Math.min(innerWidth - 1, r.left + r.width / 2));
+        const hit = document.elementFromPoint(x, r.top + 3);
+        return hit !== el && !el.contains(hit);
+      }).length;
+    return {
+      scrollWidth: document.documentElement.scrollWidth,
+      availableWidth: document.querySelector('.app').clientWidth,
+      center: rect('.center'),
+      bottom: rect('.bottom'),
+      right: rect('.right'),
+      coveredFooterControls,
+      offscreenControls: controls.filter((el) => {
+        const r = el.getBoundingClientRect();
+        return r.left < -1 || r.right > document.querySelector('.app').clientWidth + 1;
+      }).length,
+    };
+  })()`);
+  assert.ok(layout.scrollWidth <= width, `${width}px 视口存在横向溢出：${JSON.stringify(layout)}`);
+  assert.ok(layout.center.width >= layout.availableWidth - 2, `${width}px 视口主画布未使用可用宽度：${JSON.stringify(layout)}`);
+  assert.ok(layout.center.bottom <= layout.bottom.top + 1, `${width}px 视口画布覆盖控制栏：${JSON.stringify(layout)}`);
+  assert.equal(layout.coveredFooterControls, 0, `${width}px 视口控制栏按钮被遮挡：${JSON.stringify(layout)}`);
+  assert.ok(layout.right.right <= layout.availableWidth + 1, `${width}px 视口右栏被裁出屏幕：${JSON.stringify(layout)}`);
+  assert.equal(layout.offscreenControls, 0, `${width}px 视口存在不可达控件`);
+  passed(`${width}×${height}px 侧边栏布局`, '单栏无横向溢出，画布与控制栏不重叠');
+  await shot(screenshot);
+}
+await checkSidebarLayout(640, 900, '09-sidebar-640');
+await checkSidebarLayout(480, 800, '10-sidebar-480');
+await checkSidebarLayout(480, 640, '11-sidebar-480-short');
+
 assert.deepEqual(runtimeErrors, [], `浏览器运行时异常：${JSON.stringify(runtimeErrors)}`);
 assert.deepEqual(consoleErrors, [], `浏览器 console.error：${consoleErrors.join('\n')}`);
 passed('浏览器无运行时异常或 console.error');
